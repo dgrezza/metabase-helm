@@ -4,7 +4,10 @@ metadata:
   name: {{ template "metabase.fullname" . }}-config
   namespace: {{ .Release.Namespace }}
   labels:
-    {{- template "labels" . }}
+    app: {{ template "metabase.name" . }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
 data:
   {{- if .Values.log4jProperties }}
   log4j.properties:

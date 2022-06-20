@@ -10,9 +10,6 @@ image:
   tag: v0.36.3
   pullPolicy: IfNotPresent
 
-serviceAccountName:
-
-sidecars:
 ## String to fully override metabase.fullname template
 ##
 # fullnameOverride:
@@ -92,24 +89,26 @@ service:
     # Used to add custom annotations to the Service.
     # service.beta.kubernetes.io/aws-load-balancer-internal: "0.0.0.0/0"
 ingress:
-  enabled: false
+  enabled: true
   # Used to create Ingress record (should used with service.type: ClusterIP).
   hosts:
-    # - metabase.domain.com
+    - metabase.redigan.id
   # The ingress path. Useful to host metabase on a subpath, such as `/metabase`.
   path: /
   labels:
     # Used to add custom labels to the Ingress
     # Useful if for example you have multiple Ingress controllers and want your Ingress controllers to bind to specific Ingresses
     # traffic: internal
-  annotations: {}
-    # kubernetes.io/ingress.class: nginx
-    # kubernetes.io/tls-acme: "true"
+  annotations:
+    cert-manager.io/issuer: letsencrypt-staging
+    ingress.kubernetes.io/secure-backends: "true"
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/service-upstream: "true"
   tls:
-    # Secrets must be manually created in the namespace.
-    # - secretName: metabase-tls
-    #   hosts:
-    #     - metabase.domain.com
+  - secretName: metabase-secret
+    hosts:
+    - metabase.redigan.id
 
 # A custom log4j.properties file can be provided using a multiline YAML string.
 # See https://github.com/metabase/metabase/blob/master/resources/log4j.properties
